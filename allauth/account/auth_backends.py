@@ -1,4 +1,5 @@
 from django.contrib.auth.backends import ModelBackend
+from django.core.exceptions import MultipleObjectsReturned
 
 from ..utils import get_user_model
 from .utils import filter_users_by_email
@@ -37,7 +38,7 @@ class AuthenticationBackend(ModelBackend):
             user = User.objects.get(**query)
             if user.check_password(password):
                 return user
-        except User.DoesNotExist:
+        except (User.DoesNotExist, MultipleObjectsReturned):
             return None
 
     def _authenticate_by_email(self, **credentials):
